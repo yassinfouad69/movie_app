@@ -89,11 +89,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       child: CircleAvatar(
                         radius: 40,
                         backgroundColor: AppColors.secondaryBackground,
-                        child: Icon(
-                          Icons.person,
-                          size: 40,
-                          color: AppColors.primaryYellow,
-                        ),
+                        backgroundImage: AssetImage(avatar),
                       ),
                     ),
                   );
@@ -163,11 +159,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           CircleAvatar(
                             radius: 50,
                             backgroundColor: AppColors.cardBackground,
-                            child: const Icon(
-                              Icons.person,
-                              size: 50,
-                              color: AppColors.primaryYellow,
-                            ),
+                            backgroundImage: AssetImage(_selectedAvatar),
                           ),
                           Positioned(
                             bottom: 0,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'core/theme/app_theme.dart';
 import 'data/datasources/movie_api_service.dart';
 import 'data/datasources/local_storage_service.dart';
@@ -12,6 +13,9 @@ import 'presentation/screens/splash/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Firebase
+  await Firebase.initializeApp();
 
   final localStorageService = await LocalStorageService.getInstance();
   final movieApiService = MovieApiService();

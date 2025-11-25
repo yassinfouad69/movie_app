@@ -54,6 +54,11 @@ dependencies:
   # URL Launcher for watch button
   url_launcher: ^6.2.2
 
+  # Firebase
+  firebase_core: ^3.8.1
+  firebase_auth: ^5.3.3
+  cloud_firestore: ^5.5.2
+
   # Google Sign In
   google_sign_in: ^6.1.6
 

@@ -8,10 +8,32 @@ class MovieRepository {
   final MovieApiService _apiService;
   final LocalStorageService _localStorageService;
 
+  final Map<int, Movie> _movieCache = {};
+  final Map<int, List<Cast>> _castCache = {};
+  final Map<int, List<Movie>> _similarMoviesCache = {};
+  List<Genre>? _genresCache;
+  List<Movie>? _nowPlayingCache;
+  DateTime? _nowPlayingCacheTime;
+
+  static const _cacheDuration = Duration(minutes: 5);
+
   MovieRepository(this._apiService, this._localStorageService);
 
   Future<List<Movie>> getNowPlayingMovies({int page = 1}) async {
-    return await _apiService.getNowPlayingMovies(page: page);
+    if (page == 1 && _nowPlayingCache != null && _nowPlayingCacheTime != null) {
+      if (DateTime.now().difference(_nowPlayingCacheTime!) < _cacheDuration) {
+        return _nowPlayingCache!;
+      }
+    }
+
+    final movies = await _apiService.getNowPlayingMovies(page: page);
+
+    if (page == 1) {
+      _nowPlayingCache = movies;
+      _nowPlayingCacheTime = DateTime.now();
+    }
+
+    return movies;
   }
 
   Future<List<Movie>> getMoviesByGenre(int genreId, {int page = 1}) async {
@@ -19,16 +41,35 @@ class MovieRepository {
   }
 
   Future<List<Genre>> getGenres() async {
-    return await _apiService.getGenres();
+    if (_genresCache != null) {
+      return _genresCache!;
+    }
+
+    final genres = await _apiService.getGenres();
+    _genresCache = genres;
+    return genres;
   }
 
   Future<Movie> getMovieDetails(int movieId) async {
     await _localStorageService.addToHistory(movieId);
-    return await _apiService.getMovieDetails(movieId);
+
+    if (_movieCache.containsKey(movieId)) {
+      return _movieCache[movieId]!;
+    }
+
+    final movie = await _apiService.getMovieDetails(movieId);
+    _movieCache[movieId] = movie;
+    return movie;
   }
 
   Future<List<Cast>> getMovieCast(int movieId) async {
-    return await _apiService.getMovieCast(movieId);
+    if (_castCache.containsKey(movieId)) {
+      return _castCache[movieId]!;
+    }
+
+    final cast = await _apiService.getMovieCast(movieId);
+    _castCache[movieId] = cast;
+    return cast;
   }
 
   Future<List<String>> getMovieImages(int movieId) async {
@@ -36,7 +77,22 @@ class MovieRepository {
   }
 
   Future<List<Movie>> getSimilarMovies(int movieId) async {
-    return await _apiService.getSimilarMovies(movieId);
+    if (_similarMoviesCache.containsKey(movieId)) {
+      return _similarMoviesCache[movieId]!;
+    }
+
+    final movies = await _apiService.getSimilarMovies(movieId);
+    _similarMoviesCache[movieId] = movies;
+    return movies;
+  }
+
+  void clearCache() {
+    _movieCache.clear();
+    _castCache.clear();
+    _similarMoviesCache.clear();
+    _genresCache = null;
+    _nowPlayingCache = null;
+    _nowPlayingCacheTime = null;
   }
 
   Future<List<Movie>> searchMovies(String query, {int page = 1}) async {
@@ -59,31 +115,32 @@ class MovieRepository {
     final user = _localStorageService.getUser();
     if (user == null) return [];
 
-    final List<Movie> movies = [];
-    for (final movieId in user.watchlist) {
+    final futures = user.watchlist.map((movieId) async {
       try {
-        final movie = await _apiService.getMovieDetails(movieId);
-        movies.add(movie);
+        return await _apiService.getMovieDetails(movieId);
       } catch (e) {
-        continue;
+        return null;
       }
-    }
-    return movies;
+    }).toList();
+
+    final results = await Future.wait(futures);
+    return results.whereType<Movie>().toList();
   }
 
   Future<List<Movie>> getHistoryMovies() async {
     final user = _localStorageService.getUser();
     if (user == null) return [];
 
-    final List<Movie> movies = [];
-    for (final movieId in user.history) {
+    final recentHistory = user.history.take(20).toList();
+    final futures = recentHistory.map((movieId) async {
       try {
-        final movie = await _apiService.getMovieDetails(movieId);
-        movies.add(movie);
+        return await _apiService.getMovieDetails(movieId);
       } catch (e) {
-        continue;
+        return null;
       }
-    }
-    return movies;
+    }).toList();
+
+    final results = await Future.wait(futures);
+    return results.whereType<Movie>().toList();
   }
 }

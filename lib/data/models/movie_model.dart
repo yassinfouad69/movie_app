@@ -31,7 +31,6 @@ class Movie extends Equatable {
   });
 
   factory Movie.fromJson(Map<String, dynamic> json) {
-    // YTS API uses different field names than TMDB
     return Movie(
       id: json['id'] ?? 0,
       title: json['title'] ?? json['title_english'] ?? '',
@@ -39,21 +38,21 @@ class Movie extends Equatable {
       posterPath: json['medium_cover_image'] ?? json['large_cover_image'],
       backdropPath: json['background_image'] ?? json['background_image_original'],
       voteAverage: json['rating'] != null ? (json['rating'] as num).toDouble() : 0.0,
-      voteCount: 0, // YTS doesn't provide vote count
+      voteCount: 0,
       releaseDate: json['year'] != null ? json['year'].toString() : null,
-      genreIds: null, // YTS doesn't use genre IDs
+      genreIds: null,
       genres: json['genres'] != null && json['genres'] is List
           ? (json['genres'] as List)
               .asMap()
               .entries
               .map((entry) => Genre(
-                    id: entry.key, // Use index as ID
+                    id: entry.key,
                     name: entry.value.toString(),
                   ))
               .toList()
           : null,
       runtime: json['runtime'],
-      favoritesCount: 0, // YTS doesn't provide popularity
+      favoritesCount: 0,
     );
   }
 

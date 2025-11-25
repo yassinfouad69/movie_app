@@ -90,11 +90,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                       child: CircleAvatar(
                         radius: 40,
                         backgroundColor: AppColors.secondaryBackground,
-                        child: const Icon(
-                          Icons.person,
-                          size: 40,
-                          color: AppColors.primaryYellow,
-                        ),
+                        backgroundImage: AssetImage(avatar),
                       ),
                     ),
                   );
@@ -199,11 +195,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                           CircleAvatar(
                             radius: 50,
                             backgroundColor: AppColors.cardBackground,
-                            child: const Icon(
-                              Icons.person,
-                              size: 50,
-                              color: AppColors.primaryYellow,
-                            ),
+                            backgroundImage: AssetImage(_selectedAvatar),
                           ),
                           Positioned(
                             bottom: 0,

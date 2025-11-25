@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+            <certificates src="user" />
+        </trust-anchors>
+    </base-config>
+
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">yts.mx</domain>
+        <domain includeSubdomains="true">yts.am</domain>
+        <domain includeSubdomains="true">yts.lt</domain>
+        <domain includeSubdomains="true">yts.ag</domain>
+        <domain includeSubdomains="true">img.yts.mx</domain>
+        <domain includeSubdomains="true">yts-mx.proxy.sh</domain>
+        <domain includeSubdomains="true">yts-torrent.com</domain>
+        <trust-anchors>
+            <certificates src="system" />
+            <certificates src="user" />
+        </trust-anchors>
+    </domain-config>
+</network-security-config>
